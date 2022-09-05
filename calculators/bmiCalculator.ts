@@ -30,4 +30,4 @@ export const parseBmiArguments = (args: Array<string>) : BmiArguments => {
     } else {
         throw new Error('Height and weight must be numbers.');
     }
-}
+};
