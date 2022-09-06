@@ -6,7 +6,7 @@ import FemaleIcon from '@mui/icons-material/Female';
 import TransgenderIcon from '@mui/icons-material/Transgender';
 import { Gender, Patient } from "../types";
 import { apiBaseUrl } from "../constants";
-import { useStateValue } from "../state";
+import { useStateValue, updatePatient } from "../state";
 
 const PatientPage = () => {
     const { id } = useParams<{ id: string }>();
@@ -18,7 +18,7 @@ const PatientPage = () => {
                 const { data: patientData } = await axios.get<Patient>(
                     `${apiBaseUrl}/patients/${pid}`
                 );
-                dispatch({ type: "UPDATE_PATIENT", payload: patientData });
+                dispatch(updatePatient(patientData));
             } catch(error) {
                 console.log(error);
             }
