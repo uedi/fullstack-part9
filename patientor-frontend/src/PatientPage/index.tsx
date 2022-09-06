@@ -10,8 +10,8 @@ import { useStateValue, updatePatient } from "../state";
 
 const PatientPage = () => {
     const { id } = useParams<{ id: string }>();
-    const [{ patients }, dispatch] = useStateValue();
-
+    const [{ patients, diagnoses }, dispatch] = useStateValue();
+    
     React.useEffect(() => {
         const fetchPatientData = async (pid: string) => {
             try {
@@ -41,6 +41,19 @@ const PatientPage = () => {
             </div>
             <div>ssn: {patient?.ssn ? patient?.ssn : ''}</div>
             <div>occupation: {patient?.occupation}</div>
+            <h3>entries</h3>
+            {patient && patient?.entries?.map(entry => (
+                <div key={entry.id}>
+                    <div>{entry.date} {entry.description}</div>
+                    <ul>
+                    {entry.diagnosisCodes && entry.diagnosisCodes.map((code, index) => (
+                        <li key={index}>{code} {diagnoses && diagnoses[code] ? diagnoses[code].name : ''}</li>
+                    ))}
+                    </ul>
+                </div>
+                
+                
+            ))}
         </div>
     );
 
