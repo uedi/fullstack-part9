@@ -19,4 +19,9 @@ const add = (patientData: NewPatient): Patient => {
     return newPatient;
 };
 
-export default { getNonSentitiveAll, add };
+const findById = (id: string): Patient | undefined => {
+    const patient = patients.find(p => p.id === id);
+    return patient;
+};
+
+export default { getNonSentitiveAll, add, findById };
