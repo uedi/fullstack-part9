@@ -32,6 +32,21 @@ const parseSsn = (ssn: unknown): string => {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
+const isStringArray = (textArray: any[]): textArray is string[] => {    
+    return !textArray.some((item) => {
+        return !isString(item);
+    });
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const parseDiagnoses = (diagnoses: any): string[] => {
+    if(!Array.isArray(diagnoses) || !isStringArray(diagnoses)) {
+        throw new Error('Invalid diagnosisCodes: ' + diagnoses);
+    }
+    return diagnoses;
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const isGender = (param: any): param is Gender => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     return Object.values(Gender).includes(param);
@@ -41,7 +56,7 @@ const isGender = (param: any): param is Gender => {
 const isHealthCheckRating = (param: any): param is HealthCheckRating => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     return Object.values(HealthCheckRating).includes(param);
-}
+};
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const parseGender = (gender: any): Gender => {
@@ -51,12 +66,13 @@ const parseGender = (gender: any): Gender => {
     return gender;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const parseHealthCheckRating = (healthCheckRating: any): HealthCheckRating => {
     if(!healthCheckRating || !Number.isInteger(healthCheckRating) || !isHealthCheckRating(healthCheckRating)) {
         throw new Error('Invalid healthCheckRating: ' + healthCheckRating);
     }
     return healthCheckRating;
-}
+};
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const toNewPatient = (object: any): NewPatient => {
@@ -83,7 +99,8 @@ export const toNewEntry = (object: any): NewEntry => {
                 discharge: {
                     date: parseString(object.discharge.date),
                     criteria: parseString(object.discharge.criteria)
-                }
+                },
+                diagnosisCodes: parseDiagnoses(object.diagnosisCodes)
             };
             return newHospitalEntry;
         case 'OccupationalHealthcare':
@@ -93,6 +110,7 @@ export const toNewEntry = (object: any): NewEntry => {
                 specialist: parseString(object.specialist),
                 type: 'OccupationalHealthcare',
                 employerName: parseString(object.employerName),
+                diagnosisCodes: parseDiagnoses(object.diagnosisCodes),
                 sickLeave: object.sickLeave ? 
                     {
                         startDate: parseDate(object.sickLeave.startDate),
@@ -106,7 +124,8 @@ export const toNewEntry = (object: any): NewEntry => {
                 date: parseDate(object.date),
                 specialist: parseString(object.specialist),
                 type: 'HealthCheck',
-                healthCheckRating: parseHealthCheckRating(object.healthCheckRating)
+                healthCheckRating: parseHealthCheckRating(object.healthCheckRating),
+                diagnosisCodes: parseDiagnoses(object.diagnosisCodes)
             };
             return newHealthCheckEntry;
         default:

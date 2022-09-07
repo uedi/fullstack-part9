@@ -28,7 +28,7 @@ const addEntry = (id: string, entryData: NewEntry): Entry => {
     }
     patients[patientIndex].entries.push(newEntry);
     return newEntry;
-}
+};
 
 const findById = (id: string): Patient | undefined => {
     const patient = patients.find(p => p.id === id);
