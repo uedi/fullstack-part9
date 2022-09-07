@@ -1,4 +1,5 @@
-import { Gender, NewPatient } from "./types";
+import { Gender, NewEntry, NewPatient, NewHealthCheckEntry,
+    NewOccupationalHealthcareEntry, NewHospitalEntry, HealthCheckRating} from "./types";
 
 const isString = (text: unknown): text is string => {
     return typeof text === 'string' || text instanceof String;
@@ -37,12 +38,25 @@ const isGender = (param: any): param is Gender => {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
+const isHealthCheckRating = (param: any): param is HealthCheckRating => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    return Object.values(HealthCheckRating).includes(param);
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const parseGender = (gender: any): Gender => {
     if(!gender || !isString(gender) || !isGender(gender)) {
         throw new Error('Invalid gender: ' + gender);
     }
     return gender;
 };
+
+const parseHealthCheckRating = (healthCheckRating: any): HealthCheckRating => {
+    if(!healthCheckRating || !Number.isInteger(healthCheckRating) || !isHealthCheckRating(healthCheckRating)) {
+        throw new Error('Invalid healthCheckRating: ' + healthCheckRating);
+    }
+    return healthCheckRating;
+}
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const toNewPatient = (object: any): NewPatient => {
@@ -55,4 +69,47 @@ export const toNewPatient = (object: any): NewPatient => {
         entries: []
     };
     return newPatient;
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const toNewEntry = (object: any): NewEntry => {
+    switch (object.type) {
+        case 'Hospital':
+            const newHospitalEntry: NewHospitalEntry = {
+                description: parseString(object.description),
+                date: parseDate(object.date),
+                specialist: parseString(object.specialist),
+                type: 'Hospital',
+                discharge: {
+                    date: parseString(object.discharge.date),
+                    criteria: parseString(object.discharge.criteria)
+                }
+            };
+            return newHospitalEntry;
+        case 'OccupationalHealthcare':
+            const newOccupationalHealthcareEntry: NewOccupationalHealthcareEntry = {
+                description: parseString(object.description),
+                date: parseDate(object.date),
+                specialist: parseString(object.specialist),
+                type: 'OccupationalHealthcare',
+                employerName: parseString(object.employerName),
+                sickLeave: object.sickLeave ? 
+                    {
+                        startDate: parseDate(object.sickLeave.startDate),
+                        endDate: parseDate(object.sickLeave.endDate)
+                    } : undefined
+            };
+            return newOccupationalHealthcareEntry;
+        case 'HealthCheck':
+            const newHealthCheckEntry: NewHealthCheckEntry = {
+                description: parseString(object.description),
+                date: parseDate(object.date),
+                specialist: parseString(object.specialist),
+                type: 'HealthCheck',
+                healthCheckRating: parseHealthCheckRating(object.healthCheckRating)
+            };
+            return newHealthCheckEntry;
+        default:
+            throw new Error(`Unknown entry: ${JSON.stringify(object.type)}`);
+    }
 };
