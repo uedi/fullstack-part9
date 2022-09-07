@@ -7,11 +7,12 @@ import TransgenderIcon from '@mui/icons-material/Transgender';
 import { Gender, Patient } from "../types";
 import { apiBaseUrl } from "../constants";
 import { useStateValue, updatePatient } from "../state";
+import EntryDetails from "../components/EntryDetails";
 
 const PatientPage = () => {
     const { id } = useParams<{ id: string }>();
-    const [{ patients, diagnoses }, dispatch] = useStateValue();
-    
+    const [{ patients }, dispatch] = useStateValue();
+
     React.useEffect(() => {
         const fetchPatientData = async (pid: string) => {
             try {
@@ -43,16 +44,16 @@ const PatientPage = () => {
             <div>occupation: {patient?.occupation}</div>
             <h3>entries</h3>
             {patient && patient?.entries?.map(entry => (
-                <div key={entry.id}>
-                    <div>{entry.date} {entry.description}</div>
-                    <ul>
-                    {entry.diagnosisCodes && entry.diagnosisCodes.map((code, index) => (
-                        <li key={index}>{code} {diagnoses && diagnoses[code] ? diagnoses[code].name : ''}</li>
-                    ))}
-                    </ul>
+                <div key={entry.id} style={{
+                    borderStyle: 'solid',
+                    borderWidth: 1,
+                    borderColor: 'black',
+                    padding: 20,
+                    borderRadius: 5,
+                    marginBottom: 10
+                }}>
+                    <EntryDetails entry={entry} />
                 </div>
-                
-                
             ))}
         </div>
     );
